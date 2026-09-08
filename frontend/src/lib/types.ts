@@ -99,3 +99,29 @@ export interface BaseFinalRow {
   id_taxa: string | null;
   id_balde: string | null;
 }
+
+export interface ResumoMensal {
+  ano: number;
+  mes: number;
+  qtd_contratos: number;
+  qtd_seguro_sim: number;
+  qtd_seguro_nao: number;
+  qtd_spf_sim: number;
+  qtd_spp_sim: number;
+  vl_financiamento: number;
+  meta_producao: number | null;
+  vl_principal: number;
+  vl_comissionado_ehs: number;
+  vl_seguro_total: number;
+  vl_seguro_prestamista: number;
+  vl_seguro_ap: number;
+  vl_seguro_outros: number;
+  comissao_final: number;
+}
+
+export interface ResumoAnual {
+  ano: number;
+  filial: string | null;
+  filiais: string[];
+  meses: ResumoMensal[];
+}

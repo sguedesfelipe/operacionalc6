@@ -530,6 +530,42 @@ Tailwind). Build e lint passam. Duas páginas:
   Environment Variables pra não expor detalhes de infra do backend num projeto que não precisa
   deles.
 
+**Tela "Resumo do negócio" (`/dashboard/resumo`) — feita em 2026-09-07**: pedida pelo usuário depois
+de validar `base_final` — histórico anual mês-a-mês em gráficos (barras), com filtro de período
+(mês inicial/final dentro do ano) e filial, aplicado a todos os gráficos de uma vez. Backend:
+`app/services/resumo_negocio.py` (`get_resumo_mensal`), construído em cima de `get_base_final_rows`
+(chama uma vez por mês do intervalo pedido e soma/conta) — não duplica lógica de cálculo. Rota
+`GET /gn-dashboard/resumo-anual?ano=&mes_inicio=&mes_fim=&filial=`. `meta_producao` (linha de meta no
+gráfico de Produção Financiamentos) vem de `producao_por_filial`/"R$ Meta" (aba `db_Metas`) — única
+peça que NÃO vem de `base_final`; essa aba só cobre 18 filiais "grandes" (não todas as áreas), então
+`meta_producao` fica `None` pra filial fora dessa lista (limitação real do dado, não bug).
+
+Frontend: `frontend/src/components/charts.tsx` (novo — `BarWithLineChart` barra+linha no MESMO eixo
+pra "atual vs meta", `StackedBarChart` até 3 séries empilhadas, `MonthDataRow` pra linha de dado
+auxiliar tabular) seguindo a skill `dataviz` (paleta categórica validada via
+`scripts/validate_palette.js` — slots blue/orange/aqua, only light mode, mesma convenção do resto do
+app que não tem dark mode). 6 gráficos em `/dashboard/resumo/page.tsx`: Produção Financiamentos (+
+meta), Produção Contábil, Produção Comissionada, Seguro Total (empilhado Prestamista/AP/Outros),
+Comissão Final EHS, Quantidade de Contratos (empilhado Com/Sem seguro, com SPF Sim/SPP Sim como
+`MonthDataRow` embaixo).
+
+**Bug real achado testando com Playwright antes de considerar pronto** (o app não tem teste
+automatizado, mas dava pra rodar a tela localmente com dado fictício e testar hover de verdade — ver
+abaixo): o tooltip não aparecia no hover. Causa: SVG trata `fill="transparent"` como "não pintado"
+pra hit-testing — o `<rect>` invisível usado como área de hover (maior que a barra visual, seguindo a
+regra "hit target bigger than mark" da skill `dataviz`) precisa de `pointer-events: all` explícito. E
+mesmo com isso, a barra/linha visual (desenhada DEPOIS do rect, portanto por cima) tinha
+`pointer-events` padrão e "roubava" o hover antes de chegar no rect — corrigido com
+`pointer-events: none` em toda marca visual (barra, segmento empilhado, linha, círculo), deixando o
+`<rect>` como único alvo de interação. Testado depois com Playwright real (`page.mouse.move` com um
+`.png` de resultado) — tooltip aparece corretamente com todas as séries + total.
+
+**Como testei sem backend/login**: como o sandbox não tem rede pro Postgres do Render nem pro login
+Google, criei uma rota temporária `/dev-chart-preview` com dado fictício só pra validar visualmente
+os componentes de gráfico (`next dev` + Playwright headless, screenshot salvo em `/tmp`), removida
+antes de finalizar — não ficou no repo. **Ainda NÃO testado contra dado real de produção** — falta o
+usuário abrir `/dashboard/resumo` de verdade e conferir números/visual.
+
 ## Como uma sessão nova deve retomar
 
 1. Ler esta skill primeiro.

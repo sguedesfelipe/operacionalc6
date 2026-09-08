@@ -257,6 +257,9 @@ export default function BaseFinalPage() {
           )}
         </div>
         <div className="flex items-center gap-4">
+          <Link href="/dashboard/resumo" className="text-sm text-zinc-600 hover:text-zinc-900">
+            Resumo do negócio
+          </Link>
           <Link href="/dashboard/gn" className="text-sm text-zinc-600 hover:text-zinc-900">
             Comissão por área
           </Link>

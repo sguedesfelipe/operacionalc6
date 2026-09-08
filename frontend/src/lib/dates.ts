@@ -12,3 +12,18 @@ export const MESES = [
   "Novembro",
   "Dezembro",
 ];
+
+export const MESES_ABREV = [
+  "Jan",
+  "Fev",
+  "Mar",
+  "Abr",
+  "Mai",
+  "Jun",
+  "Jul",
+  "Ago",
+  "Set",
+  "Out",
+  "Nov",
+  "Dez",
+];

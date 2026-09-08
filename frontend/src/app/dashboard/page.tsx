@@ -66,6 +66,9 @@ export default function DashboardPage() {
           )}
         </div>
         <div className="flex items-center gap-4">
+          <Link href="/dashboard/resumo" className="text-sm text-zinc-600 hover:text-zinc-900">
+            Resumo do negócio
+          </Link>
           <Link href="/dashboard/base-final" className="text-sm text-zinc-600 hover:text-zinc-900">
             base_final
           </Link>
